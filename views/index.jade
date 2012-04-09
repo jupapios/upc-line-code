@@ -1,0 +1,23 @@
+div.load
+header.hide
+div.wrapper(role='main').hide
+	article.box.menu
+		h1 Opciones
+		div bits
+		input#text.number(type='text', placeholder='caracter', maxlength='20', value='', disabled)
+		div codigo de linea
+		select#combo
+			option(value='adi') ADI
+			option(value='ami') AMI
+			option(value='cmi') CMI
+			option(value='manchester') Manchester
+			option(value='b8zs') B8ZS
+			option(value='hdb3') HDB3
+	article.box.graph
+		h1 Grafica
+		br
+		div#graph
+		h1 Grafica Código de Linea 
+			span#code
+		br
+		div#graph_line_code
