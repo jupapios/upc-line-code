@@ -1,8 +1,10 @@
-
+amp = 1
 # namespace for static values
 dom =
 	# dom objects
 	txt_char: $ '#text'
+	txt_frec: $ '#amp'	
+	txt_amp: $ '#amp'
 	txt_code: $ '#code'
 	cb_codes: $ '#combo'
 	box_debg: $ '.debug'
@@ -30,6 +32,8 @@ node =
 			valide.bin event
 		dom.txt_char.on 'keyup', () =>
 			this._change()
+		dom.txt_amp.on 'keyup change', () =>
+			this._change()			
 		dom.cb_codes.on 'change', () =>
 			this._change()
 		dom.txt_code.text dom.cb_codes.val()
@@ -40,33 +44,40 @@ node =
 
 	# change for text, here is the magic :)
 	_change: ()->
+		amp = parseInt(dom.txt_amp.val()) || 1
 		char = dom.txt_char.val()
 		dom.txt_code.text dom.cb_codes.val()
-		if char.length > 0
-			this._plot char
+		new_char = []
+		for i in [0..char.length-1]
+			new_char.push parseInt char[i]
+		if new_char.length > 0
+			this._plot new_char
 			switch dom.cb_codes.val()
-				when "adi" then this._plot_code_line(code.adi(char))
-				when "ami" then this._plot_code_line(code.ami(char))
-				when "cmi" then this._plot_code_line(code.cmi(char))
-				when "manchester" then this._plot_code_line(code.manchester(char))
-				when "b8zs" then this._plot_code_line(code.b8zs(char))
-				when "hdb3" then this._plot_code_line(code.hdb3(char))
+				when "adi" then this._plot_code_line(code.adi(new_char))
+				when "ami" then this._plot_code_line(code.ami(new_char))
+				when "cmi" then this._plot_code_line(code.cmi(new_char))
+				when "manchester" then this._plot_code_line(code.manchester(new_char))
+				when "b8zs" then this._plot_code_line(code.b8zs(new_char))
+				when "hdb3" then this._plot_code_line(code.hdb3(new_char))
 			
 
 	_plot: (val) ->
+		console.log amp
 		points = []
 		for x in [0..val.length] by val.length/300
-			points.push([x, val[parseInt(x)]])
+			points.push([x, val[parseInt(x)]*amp])
 		$.plot(dom.graph, [points])
 
 	_plot_code_line: (val) ->
+		console.log amp
 		points = []
-		if dom.cb_codes.val() == "cmi"
+		if dom.cb_codes.val() == "cmi" or dom.cb_codes.val() == "manchester"
 			for x in [0..val.length] by val.length/300
-				points.push([x, val[parseInt(x)]])
+
+				points.push([x, val[parseInt(x)]*amp])
 		else
 			for x in [0..val.length] by val.length/300
-				points.push([x, val[parseInt(x)]])
+				points.push([x, val[parseInt(x)]*amp])
 		$.plot(dom.graph_line_code, [points])
 
 # code lines
@@ -77,7 +88,7 @@ code =
 		for i in [0..char.length-1]
 			adi.push char[i]
 		for i in [1..adi.length-1] by 2
-			adi[i] = if adi[i] == '1' then 0 else 1
+			adi[i] = if adi[i] == 1 then 0 else 1
 		return adi
 
 	ami: (char) ->
@@ -86,7 +97,7 @@ code =
 		for i in [0..char.length-1]
 			adi.push char[i]
 		for i in [1..adi.length-1]
-			if adi[i] != '0'
+			if adi[i] != 0
 				if flag
 					adi[i] = 1
 					flag = false
@@ -99,7 +110,7 @@ code =
 		adi = []
 		flag = true
 		for i in [0..char.length-1]
-			if char[i] == '0'
+			if char[i] == 0
 				adi.push 0
 				adi.push 1
 			else
@@ -116,7 +127,7 @@ code =
 	manchester: (char) ->
 		adi = []
 		for i in [0..char.length-1]
-			if char[i] == '0'
+			if char[i] == 0
 				adi.push 1
 				adi.push -1
 			else
@@ -128,9 +139,9 @@ code =
 	b8zs: (char) ->
 		ami = this.ami char
 		for i in [0..ami.length-9]
-			if ami[i] == "0" and ami[i+1] == "0" and ami[i+2] == "0" and ami[i+3] == "0" and ami[i+4] == "0" and ami[i+5] == "0" and ami[i+6] == "0" and ami[i+7] == "0"
+			if ami[i] == 0 and ami[i+1] == 0 and ami[i+2] == 0 and ami[i+3] == 0 and ami[i+4] == 0 and ami[i+5] == 0 and ami[i+6] == 0 and ami[i+7] == 0
 				try
-					if ami[i-1] == 1 or ami[i-1] == '1'
+					if ami[i-1] == 1 or ami[i-1] == 1
 						ami[i+3] = 1
 						ami[i+4] = -1
 						ami[i+6] = -1
@@ -148,9 +159,9 @@ code =
 	hdb3: (char) ->
 		ami = this.ami char
 		for i in [0..ami.length-4]
-			if ami[i] == "0" and ami[i+1] == "0" and ami[i+2] == "0" and ami[i+3] == "0"
+			if ami[i] == 0 and ami[i+1] == 0 and ami[i+2] == 0 and ami[i+3] == 0
 				try
-					if ami[i-1] == 1 or ami[i-1] == '1'
+					if ami[i-1] == 1 or ami[i-1] == 1
 						ami[i] = -1
 						ami[i+1] = 0
 						ami[i+2] = 0

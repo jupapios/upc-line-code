@@ -1,8 +1,12 @@
 (function() {
-  var code, dom, node, valide;
+  var amp, code, dom, node, valide;
+
+  amp = 1;
 
   dom = {
     txt_char: $('#text'),
+    txt_frec: $('#amp'),
+    txt_amp: $('#amp'),
     txt_code: $('#code'),
     cb_codes: $('#combo'),
     box_debg: $('.debug'),
@@ -32,6 +36,9 @@
       dom.txt_char.on('keyup', function() {
         return _this._change();
       });
+      dom.txt_amp.on('keyup change', function() {
+        return _this._change();
+      });
       dom.cb_codes.on('change', function() {
         return _this._change();
       });
@@ -41,45 +48,52 @@
       return $('header, div, footer').removeClass('hide');
     },
     _change: function() {
-      var char;
+      var char, i, new_char, _ref;
+      amp = parseInt(dom.txt_amp.val()) || 1;
       char = dom.txt_char.val();
       dom.txt_code.text(dom.cb_codes.val());
-      if (char.length > 0) {
-        this._plot(char);
+      new_char = [];
+      for (i = 0, _ref = char.length - 1; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
+        new_char.push(parseInt(char[i]));
+      }
+      if (new_char.length > 0) {
+        this._plot(new_char);
         switch (dom.cb_codes.val()) {
           case "adi":
-            return this._plot_code_line(code.adi(char));
+            return this._plot_code_line(code.adi(new_char));
           case "ami":
-            return this._plot_code_line(code.ami(char));
+            return this._plot_code_line(code.ami(new_char));
           case "cmi":
-            return this._plot_code_line(code.cmi(char));
+            return this._plot_code_line(code.cmi(new_char));
           case "manchester":
-            return this._plot_code_line(code.manchester(char));
+            return this._plot_code_line(code.manchester(new_char));
           case "b8zs":
-            return this._plot_code_line(code.b8zs(char));
+            return this._plot_code_line(code.b8zs(new_char));
           case "hdb3":
-            return this._plot_code_line(code.hdb3(char));
+            return this._plot_code_line(code.hdb3(new_char));
         }
       }
     },
     _plot: function(val) {
       var points, x, _ref, _ref2;
+      console.log(amp);
       points = [];
       for (x = 0, _ref = val.length, _ref2 = val.length / 300; 0 <= _ref ? x <= _ref : x >= _ref; x += _ref2) {
-        points.push([x, val[parseInt(x)]]);
+        points.push([x, val[parseInt(x)] * amp]);
       }
       return $.plot(dom.graph, [points]);
     },
     _plot_code_line: function(val) {
       var points, x, _ref, _ref2, _ref3, _ref4;
+      console.log(amp);
       points = [];
-      if (dom.cb_codes.val() === "cmi") {
+      if (dom.cb_codes.val() === "cmi" || dom.cb_codes.val() === "manchester") {
         for (x = 0, _ref = val.length, _ref2 = val.length / 300; 0 <= _ref ? x <= _ref : x >= _ref; x += _ref2) {
-          points.push([x, val[parseInt(x)]]);
+          points.push([x, val[parseInt(x)] * amp]);
         }
       } else {
         for (x = 0, _ref3 = val.length, _ref4 = val.length / 300; 0 <= _ref3 ? x <= _ref3 : x >= _ref3; x += _ref4) {
-          points.push([x, val[parseInt(x)]]);
+          points.push([x, val[parseInt(x)] * amp]);
         }
       }
       return $.plot(dom.graph_line_code, [points]);
@@ -94,7 +108,7 @@
         adi.push(char[i]);
       }
       for (i = 1, _ref2 = adi.length - 1; i <= _ref2; i += 2) {
-        adi[i] = adi[i] === '1' ? 0 : 1;
+        adi[i] = adi[i] === 1 ? 0 : 1;
       }
       return adi;
     },
@@ -106,7 +120,7 @@
         adi.push(char[i]);
       }
       for (i = 1, _ref2 = adi.length - 1; 1 <= _ref2 ? i <= _ref2 : i >= _ref2; 1 <= _ref2 ? i++ : i--) {
-        if (adi[i] !== '0') {
+        if (adi[i] !== 0) {
           if (flag) {
             adi[i] = 1;
             flag = false;
@@ -123,7 +137,7 @@
       adi = [];
       flag = true;
       for (i = 0, _ref = char.length - 1; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
-        if (char[i] === '0') {
+        if (char[i] === 0) {
           adi.push(0);
           adi.push(1);
         } else {
@@ -144,7 +158,7 @@
       var adi, i, _ref;
       adi = [];
       for (i = 0, _ref = char.length - 1; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
-        if (char[i] === '0') {
+        if (char[i] === 0) {
           adi.push(1);
           adi.push(-1);
         } else {
@@ -158,9 +172,9 @@
       var ami, i, _ref;
       ami = this.ami(char);
       for (i = 0, _ref = ami.length - 9; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
-        if (ami[i] === "0" && ami[i + 1] === "0" && ami[i + 2] === "0" && ami[i + 3] === "0" && ami[i + 4] === "0" && ami[i + 5] === "0" && ami[i + 6] === "0" && ami[i + 7] === "0") {
+        if (ami[i] === 0 && ami[i + 1] === 0 && ami[i + 2] === 0 && ami[i + 3] === 0 && ami[i + 4] === 0 && ami[i + 5] === 0 && ami[i + 6] === 0 && ami[i + 7] === 0) {
           try {
-            if (ami[i - 1] === 1 || ami[i - 1] === '1') {
+            if (ami[i - 1] === 1 || ami[i - 1] === 1) {
               ami[i + 3] = 1;
               ami[i + 4] = -1;
               ami[i + 6] = -1;
@@ -184,9 +198,9 @@
       var ami, i, _ref;
       ami = this.ami(char);
       for (i = 0, _ref = ami.length - 4; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
-        if (ami[i] === "0" && ami[i + 1] === "0" && ami[i + 2] === "0" && ami[i + 3] === "0") {
+        if (ami[i] === 0 && ami[i + 1] === 0 && ami[i + 2] === 0 && ami[i + 3] === 0) {
           try {
-            if (ami[i - 1] === 1 || ami[i - 1] === '1') {
+            if (ami[i - 1] === 1 || ami[i - 1] === 1) {
               ami[i] = -1;
               ami[i + 1] = 0;
               ami[i + 2] = 0;
