@@ -1,9 +1,10 @@
 amp = 1
+t = 1
 # namespace for static values
 dom =
 	# dom objects
 	txt_char: $ '#text'
-	txt_frec: $ '#amp'	
+	txt_frec: $ '#frec'	
 	txt_amp: $ '#amp'
 	txt_code: $ '#code'
 	cb_codes: $ '#combo'
@@ -32,10 +33,13 @@ node =
 			valide.bin event
 		dom.txt_char.on 'keyup', () =>
 			this._change()
-		dom.txt_amp.on 'keyup change', () =>
+		dom.txt_frec.on 'keyup change click', () =>
+			this._change()
+		dom.txt_amp.on 'keyup change click', () =>
 			this._change()			
 		dom.cb_codes.on 'change', () =>
 			this._change()
+
 		dom.txt_code.text dom.cb_codes.val()
 		# enable all fields (inputs)
 		dom.inputs.prop 'disabled', false
@@ -45,6 +49,7 @@ node =
 	# change for text, here is the magic :)
 	_change: ()->
 		amp = parseInt(dom.txt_amp.val()) || 1
+		t = 1/parseInt(dom.txt_frec.val()) || 1
 		char = dom.txt_char.val()
 		dom.txt_code.text dom.cb_codes.val()
 		new_char = []
@@ -62,23 +67,46 @@ node =
 			
 
 	_plot: (val) ->
+		options =
+    		series:
+      			lines:
+      				show: true
+      			points:
+      				show: true
 		console.log amp
 		points = []
-		for x in [0..val.length] by val.length/300
-			points.push([x, val[parseInt(x)]*amp])
+		#for x in [0..val.length] by val.length/300
+		k = 0
+		for x in [0..val.length-1]
+			for p in [k..k+t] by t/50
+				points.push([p, val[x]*amp])
+			k+=t
+			#points.push([x, val[parseInt(x)]*amp])
 		$.plot(dom.graph, [points])
 
 	_plot_code_line: (val) ->
 		console.log amp
 		points = []
+		#if dom.cb_codes.val() == "cmi" or dom.cb_codes.val() == "manchester"
+		#	for x in [0..val.length] by val.length/300
+		#
+		#		points.push([x, val[parseInt(x)]*amp])
+		#else
+		#	for x in [0..val.length] by val.length/300
+		#		points.push([x, val[parseInt(x)]*amp])
+		k = 0
 		if dom.cb_codes.val() == "cmi" or dom.cb_codes.val() == "manchester"
-			for x in [0..val.length] by val.length/300
-
-				points.push([x, val[parseInt(x)]*amp])
+			for x in [0..val.length-1]
+				for p in [k..k+t/2] by t/100
+					points.push([p, val[x]*amp])
+				k+=t/2
+				points.push([k, val[x]*amp])
 		else
-			for x in [0..val.length] by val.length/300
-				points.push([x, val[parseInt(x)]*amp])
-		$.plot(dom.graph_line_code, [points])
+			for x in [0..val.length-1]
+				for p in [k..k+t] by t/50
+					points.push([p, val[x]*amp])
+				k+=t
+		$.plot(dom.graph_line_code, [points], { grid: { clickable: true } })
 
 # code lines
 code =

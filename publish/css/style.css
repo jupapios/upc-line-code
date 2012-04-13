@@ -55,9 +55,10 @@ html *{font-family:josefin;font-size:18px;font-weight:bold}
 h1{font-size:20px;margin-top:0}
 body{padding:10px}
 footer{margin-top:20px}
-input[type=text]{border:1px dotted #09c;-webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px;padding:8px;outline:none;width:86%;}
-input[type=text]:focus{border:1px dotted #008000}
-input[type=text]:active{border:1px solid #008000}
+input,select{background-color:#fff;border:1px dotted #09c;-webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;padding:8px;outline:none;width:100%;}
+input:focus,select:focus{border:1px dotted #008000}
+input:active,select:active{border:1px solid #008000}
+input.error,select.error{border:1px solid #f00}
 input[type=checkbox]{margin-right:6px}
 .load{background:url("../img/242.gif") no-repeat;height:25px;left:50%;position:absolute;margin-left:-12px;margin-top:-12px;top:50%;width:25px}
 .box{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;border:1px solid #09c;-webkit-border-radius:8px;-moz-border-radius:8px;border-radius:8px;margin-bottom:20px;padding:.6em}
@@ -65,8 +66,10 @@ input[type=checkbox]{margin-right:6px}
 .menu input{margin-bottom:10px}
 .table-container{max-height:300px;overflow-y:scroll}
 .debug .title{font-style:italic}
-.graph{float:right;height:400px;overflow-y:hidden;width:79%;}
-.graph h1{position:absolute}
+.graph{float:right;overflow-y:hidden;width:79%;}
+.graph div{height:200px !important}
+.graph h1{position:absolute;}
+.graph h1 span{text-transform:uppercase}
 .graph #graph{margin-top:40px}
 .wrapper{height:400px}
 table.table{border-collapse:separate;border-spacing:2px;-webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px;background:#cdcdcd;margin:10px 0 15px;width:100%;text-align:left;}
@@ -78,6 +81,7 @@ table.table tbody tr:hover td{background:#8dbdd8}
 .graph,.menu{float:none;width:auto}
 .menu > div{display:none}
 .debug{display:none !important}
+.graph div{height:100px !important}
 }.ir{display:block;border:0;text-indent:-999em;overflow:hidden;background-color:transparent;background-repeat:no-repeat;text-align:left;direction:ltr;*line-height:0;}
 .ir br{display:none}
 .hide{opacity:0;filter:progid:DXImageTransform.Microsoft.Alpha(Opacity=0)}

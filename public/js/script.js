@@ -1,11 +1,13 @@
 (function() {
-  var amp, code, dom, node, valide;
+  var amp, code, dom, node, t, valide;
 
   amp = 1;
 
+  t = 1;
+
   dom = {
     txt_char: $('#text'),
-    txt_frec: $('#amp'),
+    txt_frec: $('#frec'),
     txt_amp: $('#amp'),
     txt_code: $('#code'),
     cb_codes: $('#combo'),
@@ -36,7 +38,10 @@
       dom.txt_char.on('keyup', function() {
         return _this._change();
       });
-      dom.txt_amp.on('keyup change', function() {
+      dom.txt_frec.on('keyup change click', function() {
+        return _this._change();
+      });
+      dom.txt_amp.on('keyup change click', function() {
         return _this._change();
       });
       dom.cb_codes.on('change', function() {
@@ -50,6 +55,7 @@
     _change: function() {
       var char, i, new_char, _ref;
       amp = parseInt(dom.txt_amp.val()) || 1;
+      t = 1 / parseInt(dom.txt_frec.val()) || 1;
       char = dom.txt_char.val();
       dom.txt_code.text(dom.cb_codes.val());
       new_char = [];
@@ -75,28 +81,54 @@
       }
     },
     _plot: function(val) {
-      var points, x, _ref, _ref2;
+      var k, options, p, points, x, _ref, _ref2, _ref3;
+      options = {
+        series: {
+          lines: {
+            show: true
+          },
+          points: {
+            show: true
+          }
+        }
+      };
       console.log(amp);
       points = [];
-      for (x = 0, _ref = val.length, _ref2 = val.length / 300; 0 <= _ref ? x <= _ref : x >= _ref; x += _ref2) {
-        points.push([x, val[parseInt(x)] * amp]);
+      k = 0;
+      for (x = 0, _ref = val.length - 1; 0 <= _ref ? x <= _ref : x >= _ref; 0 <= _ref ? x++ : x--) {
+        for (p = k, _ref2 = k + t, _ref3 = t / 50; k <= _ref2 ? p <= _ref2 : p >= _ref2; p += _ref3) {
+          points.push([p, val[x] * amp]);
+        }
+        k += t;
       }
       return $.plot(dom.graph, [points]);
     },
     _plot_code_line: function(val) {
-      var points, x, _ref, _ref2, _ref3, _ref4;
+      var k, p, points, x, _ref, _ref2, _ref3, _ref4, _ref5, _ref6;
       console.log(amp);
       points = [];
+      k = 0;
       if (dom.cb_codes.val() === "cmi" || dom.cb_codes.val() === "manchester") {
-        for (x = 0, _ref = val.length, _ref2 = val.length / 300; 0 <= _ref ? x <= _ref : x >= _ref; x += _ref2) {
-          points.push([x, val[parseInt(x)] * amp]);
+        for (x = 0, _ref = val.length - 1; 0 <= _ref ? x <= _ref : x >= _ref; 0 <= _ref ? x++ : x--) {
+          for (p = k, _ref2 = k + t / 2, _ref3 = t / 100; k <= _ref2 ? p <= _ref2 : p >= _ref2; p += _ref3) {
+            points.push([p, val[x] * amp]);
+          }
+          k += t / 2;
+          points.push([k, val[x] * amp]);
         }
       } else {
-        for (x = 0, _ref3 = val.length, _ref4 = val.length / 300; 0 <= _ref3 ? x <= _ref3 : x >= _ref3; x += _ref4) {
-          points.push([x, val[parseInt(x)] * amp]);
+        for (x = 0, _ref4 = val.length - 1; 0 <= _ref4 ? x <= _ref4 : x >= _ref4; 0 <= _ref4 ? x++ : x--) {
+          for (p = k, _ref5 = k + t, _ref6 = t / 50; k <= _ref5 ? p <= _ref5 : p >= _ref5; p += _ref6) {
+            points.push([p, val[x] * amp]);
+          }
+          k += t;
         }
       }
-      return $.plot(dom.graph_line_code, [points]);
+      return $.plot(dom.graph_line_code, [points], {
+        grid: {
+          clickable: true
+        }
+      });
     }
   };
 
